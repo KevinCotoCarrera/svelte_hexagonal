@@ -3,21 +3,20 @@ import { AddProductUseCase } from '$lib/core/use-cases/AddProductUseCase';
 import { CloudinaryImageUploader } from '$lib/adapters/cloudinary/CloudinaryImageUploader';
 import { listAllImages } from '$lib/adapters/cloudinary/CloudinaryAdminClient';
 import { ProductRepository } from '$lib/infrastructure/db/drizzle/ProductRepository.js';
+import { UuidGenerator } from '$lib/infrastructure/uuid/UuidGenerator.js';
 
 //Setup
 
 const uploader = new CloudinaryImageUploader('kekay_assets');
 
 const productRepo = new ProductRepository();
-
-const addProductUseCase = new AddProductUseCase(uploader, productRepo);
-
+const uuidGenerator = new UuidGenerator();
+const addProductUseCase = new AddProductUseCase(uploader, productRepo, uuidGenerator);
 //Load and Actions
 
 export async function load() {
 	const images = await listAllImages('');
-	const products = await productRepo.findAll();
-
+	const products = (await productRepo.findAll()).map((p) => p.toPrimitives());
 	return {
 		images,
 		products
@@ -49,7 +48,7 @@ export const actions = {
 			});
 
 			console.log('✅ Product created:', product);
-			return { success: true, product };
+			return { success: true, product: product.toPrimitives() };
 		} catch (error) {
 			console.error('❌ Product creation failed:', error);
 			return fail(500, { message: 'Failed to create product' });

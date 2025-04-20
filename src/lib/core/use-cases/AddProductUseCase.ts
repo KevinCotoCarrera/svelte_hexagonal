@@ -1,12 +1,13 @@
-// src/lib/core/use-cases/AddProductUseCase.ts
-import type { Product } from '$lib/core/domain/entities/Product';
+import { Product } from '$lib/core/domain/entities/Product';
 import type { ImageUploaderPort } from '$lib/core/ports/ImageUploaderPort';
 import type { ProductRepositoryPort } from '$lib/core/ports/ProductRepositoryPort';
+import type { IdGeneratorPort } from '$lib/core/ports/IdGeneratorPort';
 
 export class AddProductUseCase {
 	constructor(
 		private imageUploader: ImageUploaderPort,
-		private productRepo: ProductRepositoryPort
+		private productRepo: ProductRepositoryPort,
+		private idGenerator: IdGeneratorPort
 	) {}
 
 	async execute(input: {
@@ -18,17 +19,16 @@ export class AddProductUseCase {
 	}): Promise<Product> {
 		const imageUrl = await this.imageUploader.uploadImage(input.image);
 
-		const newProduct: Product = {
-			id: crypto.randomUUID(),
-			name: input.name,
-			description: input.description,
-			price: input.price,
-			qty: input.qty,
+		const product = Product.create(
+			this.idGenerator.generate(),
+			input.name,
+			input.description,
+			input.price,
+			input.qty,
 			imageUrl
-		};
+		);
 
-		await this.productRepo.create(newProduct);
-
-		return newProduct;
+		await this.productRepo.create(product);
+		return product;
 	}
 }

@@ -40,5 +40,6 @@ export const bundleProduct = pgTable('bundle_product', {
 		.references(() => product.id)
 });
 
-export type Session = typeof session.$inferSelect;
-export type User = typeof user.$inferSelect;
+export type SessionRow = typeof session.$inferSelect;
+export type UserRow = typeof user.$inferSelect;
+export type ProductRow = typeof product.$inferSelect;

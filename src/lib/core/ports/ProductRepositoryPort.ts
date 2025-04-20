@@ -6,4 +6,5 @@ export interface ProductRepositoryPort {
 	findById(id: string): Promise<Product | null>;
 	create(product: Product): Promise<void>;
 	delete(id: string): Promise<void>;
+	// update(id: string): Promise<void>;
 }

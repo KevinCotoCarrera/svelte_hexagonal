@@ -33,7 +33,6 @@ export const actions: Actions = {
 			const sessionToken = await sessionManager.create(user.id);
 			sessionManager.setCookie(event, sessionToken, new Date(Date.now() + 30 * 86400000));
 
-			throw redirect(302, '/');
 		} catch (e) {
 			const message =
 				typeof e === 'string'
@@ -45,6 +44,8 @@ export const actions: Actions = {
 			console.error('❌ Login error:', e);
 			return fail(400, { message });
 		}
+		throw redirect(302, '/');
+
 	},
 
 	register: async (event: RequestEvent) => {
@@ -65,7 +66,6 @@ export const actions: Actions = {
 			const sessionToken = await sessionManager.create(userId);
 			sessionManager.setCookie(event, sessionToken, new Date(Date.now() + 30 * 86400000));
 
-			throw redirect(302, '/');
 		} catch (e) {
 			const message =
 				typeof e === 'string' ? e : e instanceof Error ? e.message : 'Could not register user';
@@ -73,6 +73,8 @@ export const actions: Actions = {
 			console.error('❌ Register error:', e);
 			return fail(500, { message });
 		}
+		throw redirect(302, '/');
+
 	}
 };
 
