@@ -1,19 +1,21 @@
+// src/hooks.server.ts
 import { sequence } from '@sveltejs/kit/hooks';
-import * as auth from '$lib/server/auth.js';
 import type { Handle } from '@sveltejs/kit';
 import { paraglideMiddleware } from '$lib/paraglide/server';
+import { SessionManager, sessionCookieName } from '$lib/infrastructure/auth/SessionManager';
+
+const sessionManager = new SessionManager();
 
 const handleParaglide: Handle = ({ event, resolve }) =>
 	paraglideMiddleware(event.request, ({ request, locale }) => {
 		event.request = request;
-
 		return resolve(event, {
 			transformPageChunk: ({ html }) => html.replace('%paraglide.lang%', locale)
 		});
 	});
 
 const handleAuth: Handle = async ({ event, resolve }) => {
-	const sessionToken = event.cookies.get(auth.sessionCookieName);
+	const sessionToken = event.cookies.get(sessionCookieName);
 
 	if (!sessionToken) {
 		event.locals.user = null;
@@ -21,12 +23,12 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 		return resolve(event);
 	}
 
-	const { session, user } = await auth.validateSessionToken(sessionToken);
+	const { session, user } = await sessionManager.validate(sessionToken);
 
 	if (session) {
-		auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
+		sessionManager.setCookie(event, sessionToken, session.expiresAt);
 	} else {
-		auth.deleteSessionTokenCookie(event);
+		sessionManager.deleteCookie(event);
 	}
 
 	event.locals.user = user;
