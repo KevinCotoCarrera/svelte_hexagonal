@@ -5,6 +5,7 @@ import { UserRepository } from '$lib/infrastructure/db/drizzle/UserRepository';
 import { SessionManager } from '$lib/infrastructure/auth/SessionManager';
 import { encodeBase32LowerCase } from '@oslojs/encoding';
 import type { Actions, PageServerLoad } from './$types';
+import { ArgonPasswordHasher } from '$lib/infrastructure/auth/ArgonPasswordHasher';
 
 const sessionManager = new SessionManager();
 
@@ -26,7 +27,7 @@ export const actions: Actions = {
 		}
 
 		try {
-			const useCase = new LoginUserUseCase(new UserRepository());
+			const useCase = new LoginUserUseCase(new UserRepository(), new ArgonPasswordHasher());
 			const user = await useCase.execute(username, password);
 
 			const sessionToken = await sessionManager.create(user.id);
@@ -58,7 +59,7 @@ export const actions: Actions = {
 		const userId = generateUserId();
 
 		try {
-			const useCase = new RegisterUserUseCase(new UserRepository());
+			const useCase = new RegisterUserUseCase(new UserRepository(), new ArgonPasswordHasher());
 			await useCase.execute({ id: userId, username, passwordHash: password });
 
 			const sessionToken = await sessionManager.create(userId);
