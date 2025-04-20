@@ -1,11 +1,6 @@
-// for information about these interfaces
-declare global {
-	namespace App {
-		interface Locals {
-			user: import('$lib/server/auth').SessionValidationResult['user'];
-			session: import('$lib/server/auth').SessionValidationResult['session'];
-		}
+declare namespace App {
+	interface Locals {
+		user: import('$lib/core/domain/entities/User').SafeUser | null;
+		session: import('$lib/infrastructure/db/drizzle/schema').Session | null;
 	}
 }
-
-export {};
