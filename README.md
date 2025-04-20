@@ -1,37 +1,60 @@
-# sv
+# Kekay Bundles — Hexagonal Architecture SvelteKit App
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+This project is a modern inventory & product bundling web app built with **SvelteKit**, using a clean **Hexagonal (Ports & Adapters)** architecture.
 
-## Creating a project
+It integrates with:
+- 🗄️ PostgreSQL (via Drizzle ORM)
+- ☁️ Cloudinary (image uploads)
+- 🔒 Secure Argon2 authentication
+- 🎯 Modular domain logic
 
-If you're seeing this, you've probably already done this step. Congrats!
+---
 
-```bash
-# create a new project in the current directory
-npx sv create
-
-# create a new project in my-app
-npx sv create my-app
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+## 🧱 Folder Structure
 
 ```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+src/
+├── lib/
+│   ├── core/                     # Business logic (pure, framework-agnostic)
+│   │   ├── domain/entities/      # Product, Bundle, User, etc.
+│   │   ├── ports/                # Interfaces (DB, Auth, Cloud, etc.)
+│   │   └── use-cases/            # Business logic (register user, add product)
+│   │
+│   ├── infrastructure/           # Implementations of ports
+│   │   ├── db/drizzle/           # Drizzle ORM + schema + repositories
+│   │   └── auth/                 # SessionManager, Argon password hasher
+│   │
+│   ├── adapters/                 # External 3rd-party clients (e.g. Cloudinary)
+│   └── shared/                   # (Optional) shared logic/helpers (e.g. config, utils)
+│
+├── routes/                       # SvelteKit UI layer
 ```
+🧠 Hexagonal Principles Applied
+✅ Core is pure — no direct import of SvelteKit, Drizzle, or Cloudinary
 
-## Building
+✅ Use-cases are testable — they only depend on ports
 
-To create a production version of your app:
+✅ Adapters are swappable — just implement the ports
 
-```bash
-npm run build
-```
+✅ Domain-driven — entities are clean and well-typed
+
+📦 Tech Stack
+Frontend: SvelteKit (Svelte 5, Runes)
+
+Backend: PostgreSQL via Drizzle ORM
+
+Auth: Argon2 + Session Cookies
+
+Image Upload: Cloudinary
+
+Hosting: Vercel / SSR compatible
+
+🚧 Coming Next
+Check out the GitHub issues to see what’s being worked on.
+
+✨ Author
+Made with 💪 by Kevin Coto
+@thekoto.dev
 
 You can preview the production build with `npm run preview`.
 
