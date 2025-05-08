@@ -43,7 +43,6 @@ export class Product {
 			imageUrl: this.imageUrl
 		};
 	}
-	// Accessors if needed
 	get id(): string {
 		return this._id.value;
 	}
